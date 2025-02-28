@@ -148,14 +148,38 @@
         
         dataRows = [];
         hurricanesData = await GetHurricanesData();
+        if (!hurricanesData || hurricanesData.length === 0) {
+            console.error("No data received from API.");
+            return;
+        }
+
+
+        const dataArray = [
+            ['Year', 'Storms', 'Category 1', 'Category 2', 'Category 3', 'Category 4', 'Category 5']
+        ];
+
+        hurricanesData.forEach(entry => {
+            dataArray.push([
+                entry.Year,
+                entry.Storm,
+                entry.Cat1,
+                entry.Cat2,
+                entry.Cat3,
+                entry.Cat4,
+                entry.Cat5
+            ]);
+        });
+        const data = google.visualization.arrayToDataTable(dataArray);
+
+
         let graphwidth = viewPortMaxUnitX - horizontalOffset;
         let nb_years = hurricanesData.length;
         if (nb_years > 0) {
 
             switch (graphStyle) {
-                case "bars": drawCharts(hurricanesData); break;
-                case "regions": drawLines(hurricanesData); break;
-                case "curves": drawCurves(hurricanesData); break;
+                case "bars": drawCharts(data); break;
+                case "regions": drawLines(data); break;
+                case "curves": drawCurves(data); break;
             }
         }
         // todo 
