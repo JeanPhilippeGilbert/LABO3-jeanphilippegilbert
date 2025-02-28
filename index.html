@@ -178,7 +178,7 @@
 
             switch (graphStyle) {
                 case "bars": drawCharts(data); break;
-                case "regions": drawLines(data); break;
+                case "regions": drawRegions(data); break;
                 case "curves": drawCurves(data); break;
             }
         }
@@ -187,15 +187,85 @@
 
     function drawCharts(hurricanesData){
         var chart_bars = new google.visualization.ColumnChart(document.getElementById('graphContainer'));
-        chart_bars.draw(hurricanesData,null );
+        var options_bar = {
+        title: `Historiques des tempêtes de l'Atlantique entre ${$("#start").val()} et ${$("#end").val()}`,
+        titleTextStyle: { fontSize: 20, color: 'green', bold: true },
+        vAxis: { 
+            title: 'Nombre de tempêtes', 
+            minValue: 0, 
+            format: '0' 
+        },
+        hAxis: { 
+            title: 'Années', 
+            slantedText: true, 
+            slantedTextAngle: 45 
+        },
+        seriesType: 'bars',
+        bar: { groupWidth: "60%" },
+        legend: { position: 'top', textStyle: { fontSize: 12 } },
+        series: {
+            0: { color: 'cyan' },  // Tempêtes normales
+            1: { color: 'orange' }, // Ouragans catégorie 1 & 2
+            2: { color: 'red' }     // Ouragans catégorie 3+
+        },
+        backgroundColor: { fill: 'white' },
+        chartArea: { width: '80%', height: '70%' }
+    };
+        chart_bars.draw(hurricanesData,options_bar );
     }
     function drawRegions(hurricanesData){
-        var chart_region = new google.visualization.AreaChart(document.getElementById('graphContainer'));
-        chart_region.draw(hurricanesData,null);
+        var chart_region = new google.visualization.LineChart(document.getElementById('graphContainer'));
+        var options_region = {
+        title: `Historiques des tempêtes de l'Atlantique entre ${$("#start").val()} et ${$("#end").val()}`,
+        titleTextStyle: { fontSize: 20, color: 'green', bold: true },
+        vAxis: { 
+            title: 'Nombre de tempêtes', 
+            minValue: 0, 
+            format: '0' 
+        },
+        hAxis: { 
+            title: 'Années', 
+            slantedText: true, 
+            slantedTextAngle: 45 
+        },
+        legend: { position: 'top', textStyle: { fontSize: 12 } },
+        isStacked: true, // Stacks the areas to show cumulative effect
+        series: {
+            0: { color: 'cyan', areaOpacity: 0.5 },  // Tempêtes normales
+            1: { color: 'orange', areaOpacity: 0.5 }, // Ouragans catégorie 1 & 2
+            2: { color: 'red', areaOpacity: 0.5 }     // Ouragans catégorie 3+
+        },
+        backgroundColor: { fill: 'white' },
+        chartArea: { width: '80%', height: '70%' }
+    };
+        chart_region.draw(hurricanesData,options_region);
     }
     function drawCurves(hurricanesData){
-        var chart_line = new google.visualization.LineChart(document.getElementById('graphContainer'));
-        chart_line.draw(hurricanesData,null);
+        var chart_line = new google.visualization.AreaChart(document.getElementById('graphContainer'));
+        var options_line = {
+        title: `Historiques des tempêtes de l'Atlantique entre ${$("#start").val()} et ${$("#end").val()}`,
+        titleTextStyle: { fontSize: 20, color: 'green', bold: true },
+        vAxis: { 
+            title: 'Nombre de tempêtes', 
+            minValue: 0, 
+            format: '0' 
+        },
+        hAxis: { 
+            title: 'Années', 
+            slantedText: true, 
+            slantedTextAngle: 45 
+        },
+        legend: { position: 'top', textStyle: { fontSize: 12 } },
+        series: {
+            0: { color: 'cyan', lineWidth: 3 },  // Tempêtes normales
+            1: { color: 'orange', lineWidth: 3 }, // Ouragans catégorie 1 & 2
+            2: { color: 'red', lineWidth: 3 }     // Ouragans catégorie 3+
+        },
+        backgroundColor: { fill: 'white' },
+        chartArea: { width: '80%', height: '70%' },
+        curveType: 'function' // Makes the lines smooth (curved)
+    };
+        chart_line.draw(hurricanesData,options_line);
     }
     function GetHurricanesData() {
         return new Promise(resolve => {
