@@ -145,7 +145,12 @@
     }
 
     async function drawGraph() {
-
+        let startYear = parseInt($("#start").val());
+        let endYear = parseInt($("#end").val());
+        let years = [];
+        for (let i = startYear; i <= endYear; i++) {
+            years.push(i);
+        }   
         dataRows = [];
         hurricanesData = await GetHurricanesData();
         if (!hurricanesData || hurricanesData.length === 0) {
@@ -196,7 +201,8 @@
             vAxis: {
                 title: 'Nombre de tempêtes',
                 minValue: 0,
-                format: '0'
+                format: '0',
+                ticks: [years]
             },
             hAxis: {
                 title: 'Années',
@@ -225,7 +231,8 @@
             vAxis: {
                 title: 'Nombre de tempêtes',
                 minValue: 0,
-                format: '0'
+                format: '0',
+                ticks: [years]
             },
             hAxis: {
                 title: 'Années',
@@ -253,7 +260,8 @@
             vAxis: {
                 title: 'Nombre de tempêtes',
                 minValue: 0,
-                format: '0'
+                format: '0',
+                ticks:[years]
             },
             hAxis: {
                 title: 'Années',
