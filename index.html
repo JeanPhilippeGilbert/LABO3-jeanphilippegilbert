@@ -4,214 +4,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Hurricanes</title>
     <style>
-        #chart {
-            position: fixed;
-            top: 10;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: lightgray;
+        .controlsContainer {
+            display: grid;
+            grid-template-columns: 290px 200px auto;
         }
 
-        #waiting {
-            margin: auto;
-            position: absolute;
+        .rangeContainer {
+            display: grid;
+            grid-template-columns: 50px 30px auto 30px 50px;
+            align-items: center;
+        }
+
+        .checkboxContainer {
+            display: grid;
+            grid-template-columns: 20px auto 20px auto 20px auto;
+            align-items: center;
+        }
+
+        #graphContainer {
+            width: 100%;
+            height: 820px;
             background-color: lightgray;
-            padding-right: 2px;
-            padding-bottom: 2px;
-            width: 200px;
-            height: 200px;
         }
     </style>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 </head>
 
 <body>
-    Start date <input type="date" id="startDate" />
-    End date <input type="date" id="endDate" />
-    <button onclick="getRatesHistory()">Search</button>
-    &nbsp; | &nbsp; <span id="remainingRequests"></span> / <span id="maxRequests"></span>
-    <hr>
-    <label for="bars">Bars</label><input type="radio" class="curveType" name="curveType" id="bars" checked>
-    <label for="curves">Curves</label><input type="radio" class="curveType" name="curveType" id="curves">
-    &nbsp; | &nbsp;
-    <label for="USD">USD</label><input type="checkbox" class="currency" id="USD" checked />
-    <label for="EUR">EUR</label><input type="checkbox" class="currency" id="EUR" />
-    <label for="GBP">GBP</label><input type="checkbox" class="currency" id="GBP" />
-    <hr>
-    <div id="chart"> </div>
-    <div id="waiting">
-        <svg version="1.1" id="L1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
-            y="0px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
-            <circle fill="none" stroke="#fff" stroke-width="6" stroke-miterlimit="15" stroke-dasharray="14.2472,14.2472"
-                cx="50" cy="50" r="47">
-                <animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="5s" from="0 50 50"
-                    to="360 50 50" repeatCount="indefinite" />
-            </circle>
-            <circle fill="none" stroke="#fff" stroke-width="1" stroke-miterlimit="10" stroke-dasharray="10,10" cx="50"
-                cy="50" r="39">
-                <animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="5s" from="0 50 50"
-                    to="-360 50 50" repeatCount="indefinite" />
-            </circle>
-            <g fill="#fff">
-                <rect x="30" y="35" width="5" height="30">
-                    <animateTransform attributeName="transform" dur="1s" type="translate" values="0 5 ; 0 -5; 0 5"
-                        repeatCount="indefinite" begin="0.1" />
-                </rect>
-                <rect x="40" y="35" width="5" height="30">
-                    <animateTransform attributeName="transform" dur="1s" type="translate" values="0 5 ; 0 -5; 0 5"
-                        repeatCount="indefinite" begin="0.2" />
-                </rect>
-                <rect x="50" y="35" width="5" height="30">
-                    <animateTransform attributeName="transform" dur="1s" type="translate" values="0 5 ; 0 -5; 0 5"
-                        repeatCount="indefinite" begin="0.3" />
-                </rect>
-                <rect x="60" y="35" width="5" height="30">
-                    <animateTransform attributeName="transform" dur="1s" type="translate" values="0 5 ; 0 -5; 0 5"
-                        repeatCount="indefinite" begin="0.4" />
-                </rect>
-                <rect x="70" y="35" width="5" height="30">
-                    <animateTransform attributeName="transform" dur="1s" type="translate" values="0 5 ; 0 -5; 0 5"
-                        repeatCount="indefinite" begin="0.5" />
-                </rect>
-            </g>
-        </svg>
+    <div style="margin:auto; width:96%;text-align: center;">
+        <div id="graphContainer" style="margin:auto;"></div>
     </div>
-
+    <div>
+    </div>
+    <div class="controlsContainer">
+        <fieldset>
+            <legend>Style</legend>
+            <input type="radio" name="graphStyle" id="bars" value="bars" checked>
+            <label for="bars">Bâtonnets</label>
+            <input type="radio" name="graphStyle" id="regions" value="regions">
+            <label for="regions">Régions</label>
+            <input type="radio" name="graphStyle" id="curves" value="curves">
+            <label for="curves">Courbes</label>
+        </fieldset>
+        <fieldset>
+            <legend>Type</legend>
+            <div class="checkboxContainer">
+                <input type="checkbox" id="showStorm" checked>
+                <div style="background-color: green;">&nbsp;</div>
+                <input type="checkbox" id="showHurricane_12" checked>
+                <div style="background-color: orange;">&nbsp;</div>
+                <input type="checkbox" id="showHurricane_345" checked>
+                <div style="background-color: red;">&nbsp;</div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>
+                Années
+            </legend>
+            <div class="rangeContainer">
+                <input type="text" id="start" value="1950">
+                <span>&nbsp;</span>
+                <div id="slider-range"></div>
+                <span>&nbsp;</span>
+                <input type="text" id="end" value="2023">
+            </div>
+        </fieldset>
+    </div>
+    <hr>
 </body>
 
-<script src="jquery /jquery-3.4.1.min.js"></script>
-<script src="https: //www.gstatic.com/charts/loader.js"></script>
+</html>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
 
 <script defer>
-    let ratesHistory = [];
-    let bars = true;
-    let apikey = "************************";
-    const maxRequests = 100; // free account allows 100 requests / month
-    let remainingRequests;
-    let lastRequestResult = null;
-    let startDate = $("#startDate");
-    let endDate = $("#endDate");
+
+    const serverHost = "https://foregoing-cactus-booklet.glitch.me";
+    const hurricanes_API = "/api/hurricanes";
+
+    let hurricanesData;
+    let dataRows;
+    let graphStyle = "bars";
+    let showStorm = true;
+    let showHurricane_12 = true;
+    let showHurricane_345 = true;
+    let viewPortMaxUnitX = 500;
+    let viewPortMaxUnitY = 240;
+    let viewport = null;
+    let verticalScale = 5;
+    let yearWidth = 6.5;
+    let verticalOffset = 5;
+    let horizontalOffset = 10;
+    let mouseIsDown = false;
+    var timeId = null;
+    
+
+
     init_UI();
     function init_UI() {
-        hideWaiting();
-        // usefull when you a limited number of API call
-        showRemainingRequests();
         google.charts.load('current', { 'packages': ['corechart'] });
-        let now = new Date();
-        // initialize datepickers
-        $("#startDate").val(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 14).toISOString().split('T')[0]);
-        $("#endDate").val(now.toISOString().split('T')[0]);
-        // command redraw when the viewport is resized
-        $(window).resize(() => { draw_Rates_History(); });
-        // command redraw when the chart type is changed
-        $(".curveType").change(() => {
-            bars = $(".curveType:checked").attr("id") == "bars";
-            draw_Rates_History();
+        google.charts.setOnLoadCallback(drawGraph());
+
+        window.addEventListener('resize', () => {
+            clearTimeout(timeId);
+            timeId = setTimeout(drawGraph, 200);
         });
-        // command redraw when the currency is changed
-        $(".currency").change(() => {
-            compile_Rates_History();
-            draw_Rates_History();
-        })
-    }
-    function getRatesHistory() {
-        let url = "https://api.apilayer.com/currency_data/timeframe?start_date=" + startDate.val() + "&end_date=" + endDate.val() + "&source=CAD&currencies=USD,EUR,GBP";
-        showWaiting();
-        updateRequestCount();
-        $.ajax({
-            url: url,
-            headers: { 'apikey': apikey },
-            success: (result) => {
-                lastRequestResult = result;
-                hideWaiting();
-                compile_Rates_History();
-                draw_Rates_History();
+
+        $("input[name='graphStyle']").on('change', function () {
+            graphStyle = $("input[name='graphStyle']:checked").val();
+            drawGraph();
+        });
+
+        $("#slider-range").slider({
+            range: true,
+            min: 1950,
+            max: 2023,
+            values: [1950, 2023],
+            slide: function (event, ui) {
+                $("#start").val(ui.values[0]);
+                $("#end").val(ui.values[1]);
             }
-        })
+        });
+
+        $("#slider-range").on('pointerdown', e => { mouseIsDown = true; e.target.setPointerCapture(e.pointerId); })
+        $("body").on('pointerup', e => {
+            if (mouseIsDown) drawGraph();
+            e.target.releasePointerCapture(e.pointerId);
+            mouseIsDown = false;
+        });
+
+        $("#start").on("change", () => { $("#slider-range").slider('values', 0, $("#start").val()); drawGraph(); })
+        $("#end").on("change", () => { $("#slider-range").slider('values', 1, $("#end").val()); drawGraph(); })
+
+        $("#showStorm").on("change", () => { showStorm = $("#showStorm").is(':checked'); drawGraph(); })
+        $("#showHurricane_12").on("change", () => { showHurricane_12 = $("#showHurricane_12").is(':checked'); drawGraph(); })
+        $("#showHurricane_345").on("change", () => { showHurricane_345 = $("#showHurricane_345").is(':checked'); drawGraph(); })
     }
-    function compile_Rates_History() {
-        if (lastRequestResult != null) {
-            ratesHistory = [];
-            let USD = $('#USD').prop('checked');
-            let EUR = $('#EUR').prop('checked');
-            let GBP = $('#GBP').prop('checked');
-            Object.entries(lastRequestResult.quotes).forEach(([key, value]) => {
-                let row = [key];
-                if (USD) row.push(value.CADUSD);
-                if (EUR) row.push(value.CADEUR);
-                if (GBP) row.push(value.CADGBP);
-                ratesHistory.push(row);
+    
+    async function drawGraph() {
+        
+        dataRows = [];
+        hurricanesData = await GetHurricanesData();
+        let graphwidth = viewPortMaxUnitX - horizontalOffset;
+        let nb_years = hurricanesData.length;
+        if (nb_years > 0) {
+
+            switch (graphStyle) {
+                case "bars": drawCharts(hurricanesData); break;
+                case "regions": drawLines(hurricanesData); break;
+                case "curves": drawCurves(hurricanesData); break;
+            }
+        }
+        // todo 
+    };
+
+    function drawCharts(hurricanesData){
+        var chart_bars = new google.visualization.ColumnChart(document.getElementById('graphContainer'));
+        chart_bars.draw(hurricanesData,null );
+    }
+    function drawRegions(hurricanesData){
+        var chart_region = new google.visualization.AreaChart(document.getElementById('graphContainer'));
+        chart_region.draw(hurricanesData,null);
+    }
+    function drawCurves(hurricanesData){
+        var chart_line = new google.visualization.LineChart(document.getElementById('graphContainer'));
+        chart_line.draw(hurricanesData,null);
+    }
+    function GetHurricanesData() {
+        return new Promise(resolve => {
+            $.ajax({
+                url: serverHost + hurricanes_API + `?Year.start=${$("#start").val()}&Year.end=${$("#end").val()}`,
+                type: 'GET',
+                success: data => { resolve(data); },
+                error: xhr => { console.log(xhr); resolve(false); }
             });
-            let tilesRow = ['Date'];
-            if (USD) tilesRow.push('USD');
-            if (EUR) tilesRow.push('EUR');
-            if (GBP) tilesRow.push('GBP');
-            
-	        // Insert header at the beginning of array
-            ratesHistory.unshift(tilesRow);
-        }
-    }
-    function draw_Rates_History() {
-        if (lastRequestResult != null) {
-            var options = {
-                title: 'Canadian dollar rating',
-                titleTextStyle: { fontSize: '32', color: 'black' },
-                legend: { position: 'top' },
-                hAxis: {
-                    textStyle: { fontSize: 14 }
-                },
-                chartArea: { left: 100, top: 100, right: 50, bottom: 200 }
-            };
-            if (bars) {
-                options.seriesType = 'bars';
-                options.curveType = null;
-            } else {
-                options.seriesType = null;
-                options.curveType = 'function';
-            }
-            var data = google.visualization.arrayToDataTable(ratesHistory);
-            var chart;
-            if (!bars)
-                chart = new google.visualization.LineChart($('#chart')[0]);
-            else
-                chart = new google.visualization.ComboChart($('#chart')[0]);
-            chart.draw(data, options);
-        }
-    }
-    function showRemainingRequests() {
-        let currentMonth = new Date().getMonth();
-        let remainingRequests = localStorage.getItem('remainingRequests');
-        let storedCurrentMonth = localStorage.getItem('currentMonth');
-        if (currentMonth != storedCurrentMonth) {
-            remainingRequests = maxRequests
-            localStorage.setItem('currentMonth', currentMonth);
-            localStorage.setItem('remainingRequests', remainingRequests);
-        }
-        $("#remainingRequests").text("Remaining requests for this month: " + remainingRequests);
-        $("#maxRequests").text(maxRequests);
-    }
-    function updateRequestCount() {
-        let currentMonth = new Date().getMonth();
-        let remainingRequests = localStorage.getItem('remainingRequests');
-        let storedCurrentMonth = localStorage.getItem('currentMonth');
-        if (currentMonth != storedCurrentMonth) {
-            remainingRequests = maxRequests
-            localStorage.setItem('currentMonth', currentMonth);
-        }
-        remainingRequests--;
-        localStorage.setItem('remainingRequests', remainingRequests);
-        showRemainingRequests();
-    }
-    function showWaiting() {
-        centerWaiting();
-        $("#chart").empty();
-        $("#waiting").show();
-    }
-    function hideWaiting() {
-        $("#waiting").hide();
+        });
     }
 </script>
-
-</html>
