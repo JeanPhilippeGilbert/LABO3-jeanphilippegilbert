@@ -145,12 +145,7 @@
     }
 
     async function drawGraph() {
-        let startYear = parseInt($("#start").val());
-        let endYear = parseInt($("#end").val());
-        let years = [];
-        for (let i = startYear; i <= endYear; i++) {
-            years.push(i);
-        }   
+
         dataRows = [];
         hurricanesData = await GetHurricanesData();
         if (!hurricanesData || hurricanesData.length === 0) {
@@ -185,15 +180,15 @@
         if (nb_years > 0) {
 
             switch (graphStyle) {
-                case "bars": drawCharts(data,years); break;
-                case "regions": drawRegions(data,years); break;
-                case "curves": drawCurves(data,years); break;
+                case "bars": drawCharts(data); break;
+                case "regions": drawRegions(data); break;
+                case "curves": drawCurves(data); break;
             }
         }
         // todo 
     };
 
-    function drawCharts(hurricanesData,years) {
+    function drawCharts(hurricanesData) {
         var chart_bars = new google.visualization.ColumnChart(document.getElementById('graphContainer'));
         var options_bar = {
             title: `Historiques des tempêtes de l'Atlantique entre ${$("#start").val()} et ${$("#end").val()}`,
@@ -201,8 +196,7 @@
             vAxis: {
                 title: 'Nombre de tempêtes',
                 minValue: 0,
-                format: '0',
-                ticks: years
+                format: '0'
             },
             hAxis: {
                 title: 'Années',
@@ -223,7 +217,7 @@
         };
         chart_bars.draw(hurricanesData, options_bar);
     }
-    function drawRegions(hurricanesData,years) {
+    function drawRegions(hurricanesData) {
         var chart_region = new google.visualization.AreaChart(document.getElementById('graphContainer'));
         var options_region = {
             title: `Historiques des tempêtes de l'Atlantique entre ${$("#start").val()} et ${$("#end").val()}`,
@@ -231,8 +225,7 @@
             vAxis: {
                 title: 'Nombre de tempêtes',
                 minValue: 0,
-                format: '0',
-                ticks: years
+                format: '0'
             },
             hAxis: {
                 title: 'Années',
@@ -252,7 +245,7 @@
         };
         chart_region.draw(hurricanesData, options_region);
     }
-    function drawCurves(hurricanesData,years) {
+    function drawCurves(hurricanesData) {
         var chart_line = new google.visualization.LineChart(document.getElementById('graphContainer'));
         var options_line = {
             title: `Historiques des tempêtes de l'Atlantique entre ${$("#start").val()} et ${$("#end").val()}`,
@@ -260,8 +253,7 @@
             vAxis: {
                 title: 'Nombre de tempêtes',
                 minValue: 0,
-                format: '0',
-                ticks:years
+                format: '0'
             },
             hAxis: {
                 title: 'Années',
