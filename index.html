@@ -158,20 +158,20 @@
         ];
 
         hurricanesData.forEach(entry => {
-            // Calculer le nombre de tempêtes pour chaque groupe
-            const tropicalStorms = entry.Cat1 + entry.Cat2;  // Tempêtes tropicales
-            const minorHurricanes = entry.Cat1 + entry.Cat2;  // Ouragans mineurs (Cat 1 et 2)
-            const majorHurricanes = entry.Cat3 + entry.Cat4 + entry.Cat5;  // Ouragans majeurs (Cat 3 à 5)
+            
+            const tropicalStorms = entry.Cat1;  
+            const minorHurricanes = entry.Cat1 + entry.Cat2; 
+            const majorHurricanes = entry.Cat3 + entry.Cat4 + entry.Cat5;  
 
             dataArray.push([
-            entry.Year,
-            showStorm ? tropicalStorms : 0,  // Afficher ou masquer les tempêtes tropicales
-            showHurricane_12 ? minorHurricanes : 0,  // Afficher ou masquer les ouragans mineurs
-            showHurricane_345 ? majorHurricanes : 0  // Afficher ou masquer les ouragans majeurs
-        ]);
+                entry.Year,
+                showStorm ? tropicalStorms : 0,  
+                showHurricane_12 ? minorHurricanes : 0,  
+                showHurricane_345 ? majorHurricanes : 0  
+            ]);
         });
 
-        // Créer un DataTable avec les données
+        
         const data = google.visualization.arrayToDataTable(dataArray);
 
 
@@ -185,7 +185,7 @@
                 case "curves": drawCurves(data); break;
             }
         }
-        // todo 
+         
     };
 
     function drawCharts(hurricanesData) {
@@ -208,9 +208,9 @@
             bar: { groupWidth: "60%" },
             legend: { position: 'top', textStyle: { fontSize: 12 } },
             series: {
-                0: { color: 'cyan' },  // Tempêtes normales
-                1: { color: 'orange' }, // Ouragans catégorie 1 & 2
-                2: { color: 'red' }     // Ouragans catégorie 3+
+                0: { color: 'green' },  
+                1: { color: 'orange' }, 
+                2: { color: 'red' }     
             },
             backgroundColor: { fill: 'white' },
             chartArea: { width: '80%', height: '70%' }
@@ -234,11 +234,11 @@
                 format: '####'
             },
             legend: { position: 'top', textStyle: { fontSize: 12 } },
-            isStacked: true, // Stacks the areas to show cumulative effect
+            isStacked: true, 
             series: {
-                0: { color: 'cyan', areaOpacity: 0.5 },  // Tempêtes normales
-                1: { color: 'orange', areaOpacity: 0.5 }, // Ouragans catégorie 1 & 2
-                2: { color: 'red', areaOpacity: 0.5 }     // Ouragans catégorie 3+
+                0: { color: 'green', areaOpacity: 0.5 },  
+                1: { color: 'orange', areaOpacity: 0.5 }, 
+                2: { color: 'red', areaOpacity: 0.5 }     
             },
             backgroundColor: { fill: 'white' },
             chartArea: { width: '80%', height: '70%' }
@@ -263,13 +263,13 @@
             },
             legend: { position: 'top', textStyle: { fontSize: 12 } },
             series: {
-                0: { color: 'cyan', lineWidth: 3 },  // Tempêtes normales
-                1: { color: 'orange', lineWidth: 3 }, // Ouragans catégorie 1 & 2
-                2: { color: 'red', lineWidth: 3 }     // Ouragans catégorie 3+
+                0: { color: 'green', lineWidth: 3 },  
+                1: { color: 'orange', lineWidth: 3 }, 
+                2: { color: 'red', lineWidth: 3 }     
             },
-            backgroundColor: { fill: 'white' },            
+            backgroundColor: { fill: 'white' },
             chartArea: { width: '80%', height: '70%' },
-            curveType: 'function' // Makes the lines smooth (curved)
+            curveType: 'function' 
         };
         chart_line.draw(hurricanesData, options_line);
     }
