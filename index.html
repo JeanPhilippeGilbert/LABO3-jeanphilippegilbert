@@ -147,6 +147,7 @@
     async function drawGraph() {
 
         dataRows = [];
+        hurricanesData = await GetHurricanesData();
         if (!hurricanesData || hurricanesData.length === 0) {
             console.error("No data received from API.");
             return;
