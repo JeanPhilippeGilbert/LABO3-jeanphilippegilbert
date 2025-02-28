@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #chart {
+            position: fixed;
+            top: 10;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: lightgray;
+        }
+
+        #waiting {
+            margin: auto;
+            position: absolute;
+            background-color: lightgray;
+            padding-right: 2px;
+            padding-bottom: 2px;
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    Start date <input type="date" id="startDate" />
+    End date <input type="date" id="endDate" />
+    <button onclick="getRatesHistory()">Search</button>
+    &nbsp; | &nbsp; <span id="remainingRequests"></span> / <span id="maxRequests"></span>
+    <hr>
+    <label for="bars">Bars</label><input type="radio" class="curveType" name="curveType" id="bars" checked>
+    <label for="curves">Curves</label><input type="radio" class="curveType" name="curveType" id="curves">
+    &nbsp; | &nbsp;
+    <label for="USD">USD</label><input type="checkbox" class="currency" id="USD" checked />
+    <label for="EUR">EUR</label><input type="checkbox" class="currency" id="EUR" />
+    <label for="GBP">GBP</label><input type="checkbox" class="currency" id="GBP" />
+    <hr>
+    <div id="chart"> </div>
+    <div id="waiting">
+        <svg version="1.1" id="L1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+            y="0px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
+            <circle fill="none" stroke="#fff" stroke-width="6" stroke-miterlimit="15" stroke-dasharray="14.2472,14.2472"
+                cx="50" cy="50" r="47">
+                <animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="5s" from="0 50 50"
+                    to="360 50 50" repeatCount="indefinite" />
+            </circle>
+            <circle fill="none" stroke="#fff" stroke-width="1" stroke-miterlimit="10" stroke-dasharray="10,10" cx="50"
+                cy="50" r="39">
+                <animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="5s" from="0 50 50"
+                    to="-360 50 50" repeatCount="indefinite" />
+            </circle>
+            <g fill="#fff">
+                <rect x="30" y="35" width="5" height="30">
+                    <animateTransform attributeName="transform" dur="1s" type="translate" values="0 5 ; 0 -5; 0 5"
+                        repeatCount="indefinite" begin="0.1" />
+                </rect>
+                <rect x="40" y="35" width="5" height="30">
+                    <animateTransform attributeName="transform" dur="1s" type="translate" values="0 5 ; 0 -5; 0 5"
+                        repeatCount="indefinite" begin="0.2" />
+                </rect>
+                <rect x="50" y="35" width="5" height="30">
+                    <animateTransform attributeName="transform" dur="1s" type="translate" values="0 5 ; 0 -5; 0 5"
+                        repeatCount="indefinite" begin="0.3" />
+                </rect>
+                <rect x="60" y="35" width="5" height="30">
+                    <animateTransform attributeName="transform" dur="1s" type="translate" values="0 5 ; 0 -5; 0 5"
+                        repeatCount="indefinite" begin="0.4" />
+                </rect>
+                <rect x="70" y="35" width="5" height="30">
+                    <animateTransform attributeName="transform" dur="1s" type="translate" values="0 5 ; 0 -5; 0 5"
+                        repeatCount="indefinite" begin="0.5" />
+                </rect>
+            </g>
+        </svg>
+    </div>
+
+</body>
+
+<script src="jquery /jquery-3.4.1.min.js"></script>
+<script src="https: //www.gstatic.com/charts/loader.js"></script>
+
+<script defer>
+    let ratesHistory = [];
+    let bars = true;
+    let apikey = "************************";
+    const maxRequests = 100; // free account allows 100 requests / month
+    let remainingRequests;
+    let lastRequestResult = null;
+    let startDate = $("#startDate");
+    let endDate = $("#endDate");
+    init_UI();
+    function init_UI() {
+        hideWaiting();
+        // usefull when you a limited number of API call
+        showRemainingRequests();
+        google.charts.load('current', { 'packages': ['corechart'] });
+        let now = new Date();
+        // initialize datepickers
+        $("#startDate").val(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 14).toISOString().split('T')[0]);
+        $("#endDate").val(now.toISOString().split('T')[0]);
+        // command redraw when the viewport is resized
+        $(window).resize(() => { draw_Rates_History(); });
+        // command redraw when the chart type is changed
+        $(".curveType").change(() => {
+            bars = $(".curveType:checked").attr("id") == "bars";
+            draw_Rates_History();
+        });
+        // command redraw when the currency is changed
+        $(".currency").change(() => {
+            compile_Rates_History();
+            draw_Rates_History();
+        })
+    }
+    function getRatesHistory() {
+        let url = "https://api.apilayer.com/currency_data/timeframe?start_date=" + startDate.val() + "&end_date=" + endDate.val() + "&source=CAD&currencies=USD,EUR,GBP";
+        showWaiting();
+        updateRequestCount();
+        $.ajax({
+            url: url,
+            headers: { 'apikey': apikey },
+            success: (result) => {
+                lastRequestResult = result;
+                hideWaiting();
+                compile_Rates_History();
+                draw_Rates_History();
+            }
+        })
+    }
+    function compile_Rates_History() {
+        if (lastRequestResult != null) {
+            ratesHistory = [];
+            let USD = $('#USD').prop('checked');
+            let EUR = $('#EUR').prop('checked');
+            let GBP = $('#GBP').prop('checked');
+            Object.entries(lastRequestResult.quotes).forEach(([key, value]) => {
+                let row = [key];
+                if (USD) row.push(value.CADUSD);
+                if (EUR) row.push(value.CADEUR);
+                if (GBP) row.push(value.CADGBP);
+                ratesHistory.push(row);
+            });
+            let tilesRow = ['Date'];
+            if (USD) tilesRow.push('USD');
+            if (EUR) tilesRow.push('EUR');
+            if (GBP) tilesRow.push('GBP');
+            
+	        // Insert header at the beginning of array
+            ratesHistory.unshift(tilesRow);
+        }
+    }
+    function draw_Rates_History() {
+        if (lastRequestResult != null) {
+            var options = {
+                title: 'Canadian dollar rating',
+                titleTextStyle: { fontSize: '32', color: 'black' },
+                legend: { position: 'top' },
+                hAxis: {
+                    textStyle: { fontSize: 14 }
+                },
+                chartArea: { left: 100, top: 100, right: 50, bottom: 200 }
+            };
+            if (bars) {
+                options.seriesType = 'bars';
+                options.curveType = null;
+            } else {
+                options.seriesType = null;
+                options.curveType = 'function';
+            }
+            var data = google.visualization.arrayToDataTable(ratesHistory);
+            var chart;
+            if (!bars)
+                chart = new google.visualization.LineChart($('#chart')[0]);
+            else
+                chart = new google.visualization.ComboChart($('#chart')[0]);
+            chart.draw(data, options);
+        }
+    }
+    function showRemainingRequests() {
+        let currentMonth = new Date().getMonth();
+        let remainingRequests = localStorage.getItem('remainingRequests');
+        let storedCurrentMonth = localStorage.getItem('currentMonth');
+        if (currentMonth != storedCurrentMonth) {
+            remainingRequests = maxRequests
+            localStorage.setItem('currentMonth', currentMonth);
+            localStorage.setItem('remainingRequests', remainingRequests);
+        }
+        $("#remainingRequests").text("Remaining requests for this month: " + remainingRequests);
+        $("#maxRequests").text(maxRequests);
+    }
+    function updateRequestCount() {
+        let currentMonth = new Date().getMonth();
+        let remainingRequests = localStorage.getItem('remainingRequests');
+        let storedCurrentMonth = localStorage.getItem('currentMonth');
+        if (currentMonth != storedCurrentMonth) {
+            remainingRequests = maxRequests
+            localStorage.setItem('currentMonth', currentMonth);
+        }
+        remainingRequests--;
+        localStorage.setItem('remainingRequests', remainingRequests);
+        showRemainingRequests();
+    }
+    function showWaiting() {
+        centerWaiting();
+        $("#chart").empty();
+        $("#waiting").show();
+    }
+    function hideWaiting() {
+        $("#waiting").hide();
+    }
+</script>
+
+</html>
